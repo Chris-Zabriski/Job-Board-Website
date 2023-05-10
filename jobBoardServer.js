@@ -15,12 +15,12 @@ const database = process.env.MONGO_DB_NAME;
 const boardCollection = process.env.MONGO_BOARD_COLLECTION;
 const appCollection = process.env.MONGO_APP_COLLECTION;
 
-// Initiate the server
-app.set('views', path.resolve(__dirname, 'templates'));
+// Initiate the server pages
 app.set('view engine', 'ejs');
 
-// Allowing the server to view CSS files
-app.use(express.static("public"));
+// Allowing the server to view CSS and image files
+const publicDir = require('path').join(__dirname,'/public');
+app.use(express.static(publicDir));
 
 // Server is now listening on given port number
 app.listen(portNumber);

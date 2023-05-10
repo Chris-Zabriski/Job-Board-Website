@@ -1,3 +1,41 @@
-h1 {
-    color: red;
+/* Google Font API Import */
+@import url('https://fonts.googleapis.com/css?family=Barlow+Condensed&display=swap');
+
+html {
+    font-family: 'Barlow Condensed', sans-serif;
+    background-color: white;
+    background-image: url(../images/background.jpeg);
+}
+
+#title {
+    color: black;
+    font-size: 50px;
+    margin-right: 20px;
+    margin-left: 20px;
+    font-weight: bold;
+}
+
+#title, #logo, .links {
+    display: inline-block;
+    position: relative;
+}
+
+#logo {
+    height: 100px;
+    width: auto;
+    margin-left: 20px;
+    margin-top: 20px;
+}
+
+.links {
+    padding-right: 15px;
+    font-size: 30px;
+}
+
+#background {
+    height: 700px;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
 }
