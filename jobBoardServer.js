@@ -44,6 +44,7 @@ app.get('/login', (request, response) => {
     response.render('login', action);
   });
 
+// Render the admin landing page
 app.post('/admin', (request, response) => {
     const adminUsername = request.body.username;
     const adminPassword = request.body.password;

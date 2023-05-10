@@ -72,3 +72,28 @@ html {
     text-align: center;
     color: blue;
 }
+
+#btn-header {
+    margin-left: 200px;
+    font-size: 40px;
+    color: darkblue;
+}
+
+#btns {
+    display: block;
+    text-align: center;
+    margin-right: 950px;
+}
+
+.admin-btns {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: darkblue;
+    color: white;
+    border: 5px solid darkblue;
+    border-radius: 5px;
+}
+
+.admin-btns:hover {
+    box-shadow: 10px 5px 5px gray;
+}
