@@ -4,7 +4,6 @@
 html {
     font-family: 'Barlow Condensed', sans-serif;
     background-color: white;
-    background-image: url(../images/background.jpeg);
 }
 
 #title {
@@ -38,4 +37,38 @@ html {
     margin-left: auto;
     margin-right: auto;
     position: relative;
+}
+
+#about {
+    font-size: 40px;
+    margin-right: 850px;
+    margin-left: 20px;
+}
+
+#form {
+    display: block;
+    text-align: center;
+}
+
+#login {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+#login, input, button {
+    font-size: 25px;
+}
+
+#invalid {
+    font-size: 25px;
+    color: red;
+    text-align: center;
+}
+
+#hint {
+    font-size: 15px;
+    text-align: center;
+    color: blue;
 }

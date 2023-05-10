@@ -25,7 +25,32 @@ app.use(express.static(publicDir));
 // Server is now listening on given port number
 app.listen(portNumber);
 
+// Intialize body parser
+app.use(bodyParser.urlencoded({extended:false}));
+
 // Render the index page
 app.get('/', (request, response) => {
   response.render('index');
+});
+
+// Render the about page
+app.get('/about', (request, response) => {
+    response.render('about');
+  });
+
+// Render the admin login page
+app.get('/login', (request, response) => {
+    const action = {port: `http://localhost:${portNumber}/admin`};
+    response.render('login', action);
+  });
+
+app.post('/admin', (request, response) => {
+    const adminUsername = request.body.username;
+    const adminPassword = request.body.password;
+
+    if (adminUsername === 'admin' && adminPassword === '1234') {
+        response.render('admin');
+    } else {
+        response.render('invalid');
+    }
 });

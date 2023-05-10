@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Admin Login</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="images/logo.png" id="logo">
+	<p id="title">Admin Login</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/login">Admin</a>
+    <div id="form">
+        <form id="login" action=<%- port %> method="post">
+            <fieldset>
+                <legend>Login</legend>
+                Username: <br>
+                <input type="text" size="20" id="username" name="username" value="admin"> <br>
+                Password: <br>
+                <input type="text" size="20" id="password" name="password"> <br>
+                <div id="hint">Hint: Easy as 1234</div><br>
+                <input type="submit" value="Login">
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>
