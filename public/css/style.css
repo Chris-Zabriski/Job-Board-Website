@@ -97,3 +97,8 @@ html {
 .admin-btns:hover {
     box-shadow: 10px 5px 5px gray;
 }
+
+.back-to-admin {
+    text-align: center;
+    font-size: 25px;
+}

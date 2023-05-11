@@ -49,7 +49,7 @@ app.get('/about', (request, response) => {
     response.render('about');
 });
 
-// Render the admin login page
+// Render the login page
 app.get('/login', (request, response) => {
     const action = {port: `http://localhost:${portNumber}/user`};
     response.render('login', action);
@@ -60,6 +60,7 @@ app.get('/login', (request, response) => {
 //job board should have a filter to look through database and display listings
 //admin page should have a form to add jobs (think of neccessary info) 
 
+// Render the admin page
 app.post('/user', async (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
@@ -82,6 +83,7 @@ app.post('/user', async (request, response) => {
     }
 });
 
+// Render the register page
 app.post('/register', async (request, response) => {
   const username = request.body.name;
   const password = request.body.passowrd;
@@ -104,10 +106,76 @@ app.post('/register', async (request, response) => {
   }
 });
 
+// Render board page
 app.get('/board', (request, response) => {
   const action = {port: `http://localhost:${portNumber}/admin`};
   response.render('board', action);
 });
+
+// Remove all applicants from the MongoDB database
+app.get('/confirmAppsRemoved', async (request, response) => {
+  let removed;
+  let count = await removeApplicants();
+  if (count) {
+    removed = {removed: count};
+  } else {
+    removed = {removed: 0};
+  }
+
+  response.render('processAppsRemove', removed);
+});
+
+// Remove all job postings from the MongoDB database
+app.get('/confirmJobsRemoved', async (request, response) => {
+  let removed;
+  let count = await removeJobs();
+  if (count) {
+    removed = {removed: count};
+  } else {
+    removed = {removed: 0};
+  }
+
+  response.render('processJobsRemove', removed);
+});
+
+// Render the admin page again after a button is clicked.
+app.get('/user', (request, response) => {
+  response.render('admin');
+});
+
+// Function for removing all applications from the MongoDB database
+async function removeApplicants() {
+  const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+  let result;
+
+  try {
+      await client.connect();
+      result = await client.db(database).collection(appCollection).deleteMany({});
+  } catch (e) {
+      console.error(e);
+  } finally {
+      await client.close();
+      return result.deletedCount;
+  }
+}
+
+// Function for removing all applications from the MongoDB database
+async function removeJobs() {
+  const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
+  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+  let result;
+
+  try {
+      await client.connect();
+      result = await client.db(database).collection(boardCollection).deleteMany({});
+  } catch (e) {
+      console.error(e);
+  } finally {
+      await client.close();
+      return result.deletedCount;
+  }
+}
 
 /*Server Command Line Interpreter*/
 process.stdin.setEncoding("utf8");
