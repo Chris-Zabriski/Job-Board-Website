@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Register User</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="images/logo.png" id="logo">
+	<p id="title">Register User</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/login">Login</a>
+    <div class="cred-form">
+        <script>
+            function validate() {
+                const password = document.getElementById("password");
+                const password2 = document.getElementById("password2");
+
+                if (password.value !== password2.value) {
+                    alert("Passwords do not match");
+                    return false;
+                }
+                return true;
+            }
+        </script>
+        <form id="register-form" action=<%- port %> method="post">
+            <fieldset>
+                Username: <br>
+                <input type="text" size="20" id="username" name="username" required> <br>
+                Password: <br>
+                <input type="text" size="20" id="password" name="password" minlength="4" required> <br>
+                Password: <br>
+                <input type="text" size="20" id="password2" name="password2" minlength="4" required> <br><br>
+                <input type="submit" onclick="return validate()" value="Login">
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>

@@ -45,12 +45,12 @@ html {
     margin-left: 20px;
 }
 
-#form {
+.cred-form {
     display: block;
     text-align: center;
 }
 
-#login {
+#login-form, #register-form {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
