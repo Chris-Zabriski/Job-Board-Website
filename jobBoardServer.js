@@ -143,6 +143,51 @@ app.get('/user', (request, response) => {
   response.render('admin');
 });
 
+// Render the page to add jobs to the board.
+app.get('/addJobs', (request, response) => {
+  const action = {port: `http://localhost:${portNumber}/processAddJobs`};
+  response.render('addJobs', action);
+});
+
+// Push data from job to MongoDB and post the process page
+app.post('/processAddJobs', async (request, response) => {
+  const variables = {
+    position: request.body.position,
+    startSalary: request.body.startingRange,
+    endSalary: request.body.endingRange,
+    location: request.body.location,
+    description: request.body.description,
+    requirements: request.body.requirements
+  };
+
+  await addJobs(variables);
+
+  response.render('processAddJobs', variables);
+})
+
+// Function for add jobs to MongoDB database
+async function addJobs(values) {
+
+  try {
+      await client.connect();
+
+      await updateValues(client, values);
+  } catch (e) {
+      console.error(e);
+  } finally {
+      await client.close();
+  }
+}
+
+// Helper function for addJobs()
+async function updateValues(client, values) {
+
+  const result = await client.db(database)
+  .collection(collection)
+  .insertOne(values);
+
+}
+
 // Function for removing all applications from the MongoDB database
 async function removeApplicants() {
   const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;

@@ -50,15 +50,26 @@ html {
     text-align: center;
 }
 
-#login-form, #register-form {
+#login-form, #register-form, #add-job-form {
     display: inline-block;
     margin-left: auto;
     margin-right: auto;
-    text-align: left;
+    text-align: center;
+    font-size: 20px;
 }
 
 #login, input, button {
     font-size: 25px;
+    margin-bottom: 10px;
+}
+
+textarea {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+fieldset {
+    border: 3px solid black;
 }
 
 #invalid {
@@ -101,4 +112,28 @@ html {
 .back-to-admin {
     text-align: center;
     font-size: 25px;
+}
+
+#add-footer {
+    margin-top: 200px;
+}
+
+#job-process {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 20px;
+}
+
+#back-admin {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 20px;
+}
+
+#process-add-footer {
+    margin-top: 200px;
 }

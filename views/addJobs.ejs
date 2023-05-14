@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+    <style>
+        html {
+            background-image: url(../images/add-jobs.png);
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    </style>
+<head>
+	<meta charset="utf-8" />
+	<title>Add Jobs</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="images/logo.png" id="logo">
+	<p id="title">Add Jobs</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/login">Login</a>
+    <a class="links" href="/login">Admin</a><br>
+    <div class="cred-form">
+        <form id="add-job-form" action=<%- port %> method="post">
+            <fieldset>
+                <legend>Complete to Add a Job</legend>
+                Position: <input type="text" size="25" name="position"> <br>
+                Salary Range: <input type="text" size="8" name="startingRange"> &#8212; <input type="text" size="8" name="endingRange"> <br>
+                Location (Onsite or Remote): <input type="text" size="25" name="location"> <br>
+                Description: <br> <textarea rows="5" cols="50" name="description"></textarea> <br>
+                Requirements: <br> <textarea rows="5" cols="50" name="requirements"></textarea> <br>
+                <input type="submit" value="Submit">
+            </fieldset>
+        </form>
+    </div>
+    <div id="add-footer"></div>
+</body>
+</html>
