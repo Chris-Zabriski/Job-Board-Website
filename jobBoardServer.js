@@ -59,7 +59,6 @@ app.get('/login', (request, response) => {
     response.render('login', action);
 });
 
-//from login we would check for admin or user 
 //have a user page to look at their applications and a link to job board
 //job board should have a filter to look through database and display listings
 //admin page should have a form to add jobs (think of neccessary info) 
@@ -77,7 +76,8 @@ app.post('/login', async (request, response) => {
       const result = await client.db(database).collection(usersCollection).findOne({username: username});
 
       if (result !== null && result.password === password) {
-        response.render("user");
+        const vars = {table: await getJobApps()};
+        response.render('user', vars);
       } else {
         response.render("invalid");
       }
@@ -98,8 +98,6 @@ app.post('/register', async (request, response) => {
 
   try {
     await client.connect();
-    //TODO: have to check if username has been taken before we register
-    //as of now values being passed are null
     if (username !== undefined && password !== undefined) {
       let tempUser = {username: username, password: password};
     const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
@@ -223,7 +221,6 @@ app.get('/viewApplicants', async (request, response) => {
 
 // Function for add jobs to MongoDB database
 async function addJobs(values) {
-
   try {
       await client.connect();
 
@@ -241,7 +238,6 @@ async function updateValues(values) {
   const result = await client.db(database)
   .collection(boardCollection)
   .insertOne(values);
-
 }
 
 async function getTable() {
@@ -262,6 +258,29 @@ async function getTable() {
     table += '</table>';
   } else {
     table = '<div id="no-jobs\">There are no Jobs to Display</div>';
+  }
+  return table
+}
+
+async function getJobApps(username) {
+  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
+  let myJobs;
+  try {
+    await client.connect();
+    myJobs = await client.db(database).collection(appCollection).find({username: username}).toArray();
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await client.close();
+  }
+  if (myJobs && myJobs.length !== 0) {
+    myJobs.forEach(element => {
+      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
+    });
+    table += '</table>';
+  } else {
+    table = '<div id="no-jobs\">You have not applied to any jobs, or your applications have been rejected</div>';
+    table += '<a href=\"board\"><button type=\"button\" class=\"admin-btns\">Get yourself out there and apply!</button></a>'
   }
   return table
 }
