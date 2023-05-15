@@ -94,17 +94,24 @@ app.post('/register', async (request, response) => {
   const username = request.body.username;
   const password = request.body.password;
 
-  console.log(username + " " + password);
-
   try {
     await client.connect();
-    if (username !== undefined && password !== undefined) {
-      let tempUser = {username: username, password: password};
-    const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
-    }
+    const check = await client.db(database)
+                        .collection(usersCollection)
+                        .findOne({username: username});
 
-    const vars = {table: getTable()}
-    response.render('/board', vars)
+    if (check) {
+      alert("username is already taken :(");
+
+      const action = {port: `http://localhost:${portNumber}/login`};
+      response.render('login', action);
+    } else {
+      let tempUser = {username: username, password: password};
+      const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
+
+      const vars = {table: await getTable()};
+      response.render('board', vars);
+    } 
   }
   catch (e) {
     console.error(e);
