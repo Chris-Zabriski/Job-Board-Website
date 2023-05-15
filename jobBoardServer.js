@@ -7,7 +7,6 @@ const app = express();
 const portNumber = process.argv[2];
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require("dotenv").config({ path: path.resolve(__dirname, '.env') });
-const cookieParser = require("cookie-parser");
 
 // Usage Check
 if (process.argv.length != 3) {
@@ -29,9 +28,6 @@ app.set('view engine', 'ejs');
 // Allowing the server to view CSS and image files
 const publicDir = require('path').join(__dirname,'/public');
 app.use(express.static(publicDir));
-
-// Enabling the cookie parser in Express modules
-app.use(cookieParser());
 
 // Server is now listening on given port number
 app.listen(portNumber);
@@ -126,6 +122,36 @@ app.get('/board', async (request, response) => {
   response.render('board', vars);
 });
 
+// Render the application page
+app.get('/apply', (request, response) => {
+  const variables = {
+    port: `http://localhost:${portNumber}/applied`,
+    position: request.query.position,
+    company: request.query.company,
+  };
+
+  variables.company = variables.company.replace('-', ' ');
+  variables.position = variables.position.replace('-', ' ');
+
+  response.render('apply', variables);
+});
+
+// Render the applied page
+app.post('/applied', async (request, response) => {
+  const variables = {
+    name: request.body.name,
+    username: request.body.username,
+    position: request.body.position,
+    company: request.body.company,
+    info: request.body.info
+  };
+
+  await addApplication(variables);
+
+  response.render('applied', variables);
+});
+
+// Render the remove jobs page
 app.get('/removeJobs', (request, response) => {
   const action = {port: `http://localhost:${portNumber}/removeJobs`};
   response.render("removeJobs", action);
@@ -186,6 +212,7 @@ app.get('/addJobs', (request, response) => {
 app.post('/processAddJobs', async (request, response) => {
   const variables = {
     position: request.body.position,
+    company: request.body.company,
     startSalary: request.body.startingRange,
     endSalary: request.body.endingRange,
     location: request.body.location,
@@ -200,7 +227,7 @@ app.post('/processAddJobs', async (request, response) => {
 
 // Render the list of applicants page
 app.get('/viewApplicants', async (request, response) => {
-  let table = '<table border=\"1\" id=\"app-table\"><tr><th>Name</th><th>Job</th><th>Address</th></tr>';
+  let table = '<table border=\"1\" id=\"app-table\"><tr><th>Name</th><th>Username</th><th>Position</th><th>Company</th><th>Info</th></tr>';
   let allApplicants;
   try {
     await client.connect();
@@ -212,7 +239,7 @@ app.get('/viewApplicants', async (request, response) => {
   }
   if (allApplicants && allApplicants.length !== 0) {
     allApplicants.forEach(element => {
-      table += `<tr><td>${element.name}</td><td>${element.job}</td><td>${element.address}</td></tr>`
+      table += `<tr><td>${element.name}</td><td>${element.username}</td><td>${element.position}</td><td>${element.company}</td><td>${element.info}</td></tr>`
     });
     table += '</table>';
   
@@ -225,6 +252,19 @@ app.get('/viewApplicants', async (request, response) => {
     response.render('viewApplicants', noApps);
   }
 });
+
+// Function for adding application to MongoDB database
+async function addApplication(values) {
+  try {
+    await client.connect();
+
+    await client.db(database).collection(appCollection).insertOne(values);
+  } catch (e) {
+    console.error(e);
+  } finally {
+    await client.close();
+  }
+}
 
 // Function for add jobs to MongoDB database
 async function addJobs(values) {
@@ -248,7 +288,7 @@ async function updateValues(values) {
 }
 
 async function getTable() {
-  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
+  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Company</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th><th>Application</th></tr>';
   let allJobs;
   try {
     await client.connect();
@@ -260,7 +300,7 @@ async function getTable() {
   }
   if (allJobs && allJobs.length !== 0) {
     allJobs.forEach(element => {
-      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
+      table += `<tr><td>${element.position}</td><td>${element.company}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td><td><a href=\"/apply/?position=${element.position.replace(' ', '-')}&company=${element.company.replace(' ', '-')}\">Apply</a></tr>`
     });
     table += '</table>';
   } else {
@@ -270,7 +310,7 @@ async function getTable() {
 }
 
 async function getJobApps(username) {
-  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
+  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Company</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
   let myJobs;
   try {
     await client.connect();
@@ -282,7 +322,7 @@ async function getJobApps(username) {
   }
   if (myJobs && myJobs.length !== 0) {
     myJobs.forEach(element => {
-      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
+      table += `<tr><td>${element.position}</td><td>${element.company}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
     });
     table += '</table>';
   } else {
