@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Login</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="images/logo.png" id="logo">
+	<p id="title">Found the right fit</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/login">Login</a>
+    <div id="form">
+        <script src="/jobBoardServer.js"></script>
+        <form id="login" action=<%- port %> method="post">
+            <fieldset>
+                <legend>Job Posting</legend>
+                Job Title: <br>
+                <input type="text" size="20" id="title" name="title" required> <br>
+                Salary: <br>
+                <input type="number" size="20" id="salary" name="salary" required> <br>
+
+                <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove this posting?')">
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>

@@ -105,8 +105,8 @@ app.post('/register', async (request, response) => {
     const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
     }
 
-    //initially users variables will be empty but we might still need to pass something
-    response.render("user");
+    const vars = {table: getTable()}
+    response.render('/board', vars)
   }
   catch (e) {
     console.error(e);
@@ -117,30 +117,31 @@ app.post('/register', async (request, response) => {
 
 // Render board page
 app.get('/board', async (request, response) => {
-  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
-  let allJobs;
+  const vars = {table: await getTable()};
+  response.render('board', vars);
+});
+
+app.get('/removeJobs', (request, response) => {
+  const action = {port: `http://localhost:${portNumber}/removeJobs`};
+  response.render("removeJobs", action);
+});
+
+app.post('/removeJobs', async (request, response) => {
+  const title = request.body.title;
+  const salary = request.body.salary;
+
   try {
     await client.connect();
-    allJobs = await client.db(database).collection(boardCollection).find({}).toArray();
-  } catch (e) {
-    console.error(e)
-  } finally {
-    await client.close();
-  }
-  if (allJobs && allJobs.length !== 0) {
-    allJobs.forEach(element => {
-      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
-    });
-    table += '</table>';
-  
-    const jobTable = {table: table};
-  
-    response.render('board', jobTable);
-  } else {
-    const noJobs = {table: '<div id="no-jobs\">There are no Jobs to Display</div>'};
+    let targetJob = {title: title, salary: salary};
+    const result = await client.db(database).collection(boardCollection).deleteOne(targetJob);
 
-    response.render('board', noJobs);
-  }
+    const vars = {table: await getTable()};
+    response.render('board', vars);
+} catch (e) {
+    console.error(e);
+} finally {
+    await client.close();
+}
 });
 
 // Remove all applicants from the MongoDB database
@@ -169,10 +170,6 @@ app.get('/confirmJobsRemoved', async (request, response) => {
   response.render('processJobsRemove', removed);
 });
 
-// Render the admin page again after a button is clicked.
-app.get('/user', (request, response) => {
-  response.render('admin');
-});
 
 // Render the page to add jobs to the board.
 app.get('/addJobs', (request, response) => {
@@ -245,6 +242,28 @@ async function updateValues(values) {
   .collection(boardCollection)
   .insertOne(values);
 
+}
+
+async function getTable() {
+  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
+  let allJobs;
+  try {
+    await client.connect();
+    allJobs = await client.db(database).collection(boardCollection).find({}).toArray();
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await client.close();
+  }
+  if (allJobs && allJobs.length !== 0) {
+    allJobs.forEach(element => {
+      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
+    });
+    table += '</table>';
+  } else {
+    table = '<div id="no-jobs\">There are no Jobs to Display</div>';
+  }
+  return table
 }
 
 // Function for removing all applications from the MongoDB database
