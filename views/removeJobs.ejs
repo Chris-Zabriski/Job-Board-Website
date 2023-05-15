@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Removing Job</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="images/logo.png" id="logo">
+	<p id="title">Remove One Job Posting</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/admin">Admin</a>
+    <div class="center-div">
+        <script src="/jobBoardServer.js"></script>
+        <form id="add-job-form" action=<%- port %> method="post">
+            <fieldset>
+                <legend>Job Posting</legend>
+                Job Title: <br>
+                <input type="text" size="20" id="title" name="title" required> <br>
+                Company: <br>
+                <input type="text" size="20" id="company" name="company" required> <br>
+
+                <input type="submit" value="Remove" onclick="return confirm('Are you sure you want to remove this posting?')">
+            </fieldset>
+        </form>
+    </div>
+</body>
+</html>

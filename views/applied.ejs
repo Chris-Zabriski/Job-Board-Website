@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<title>Applied to Job</title>
+    <link href="/css/style.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <img src="/images/logo.png" id="logo">
+	<p id="title">Application Complete</p>
+    <a class="links" href="/">Home</a>
+    <a class="links" href="/board">Jobs</a>
+    <a class="links" href="/about">About</a>
+    <a class="links" href="/login">Login</a><br>
+    <div id="job-process">
+        Thank you for Applying! <br>
+        Name: <%- name %> <br>
+        Username: <%- username %> <br>
+        Position: <%- position %> <br>
+        Company: <%- company %> <br>
+        Additional Info: <br>
+        <%- info %>
+    </div>
+    <hr>
+    <p id="back-admin">Back to <a href="/board">Job Board</a></p>
+</body>
+</html>
