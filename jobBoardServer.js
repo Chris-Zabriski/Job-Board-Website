@@ -91,8 +91,8 @@ app.get('/register', (request, response) => {
 
 // Render the register page
 app.post('/register', async (request, response) => {
-  const username = request.body.name;
-  const password = request.body.passowrd;
+  const username = request.body.username;
+  const password = request.body.password;
 
   console.log(username + " " + password);
 

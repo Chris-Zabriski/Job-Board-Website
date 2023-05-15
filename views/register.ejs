@@ -5,6 +5,18 @@
 	<meta charset="utf-8" />
 	<title>Register User</title>
     <link href="css/style.css" rel="stylesheet" type="text/css">
+    <script>
+        function validate() {
+            const password = document.getElementById("password");
+            const password2 = document.getElementById("password2");
+
+            if (password.value !== password2.value) {
+                alert("Passwords do not match");
+                return false;
+            }
+            return true;
+        }
+    </script>
 </head>
 
 <body>
@@ -23,23 +35,10 @@
                 <input type="text" size="20" id="password" name="password" minlength="4" required> <br>
                 Confirm Password: <br>
                 <input type="text" size="20" id="password2" name="password2" minlength="4" required> <br><br>
-                <input type="submit" value="Login">
+                <input type="submit" value="Login" onclick="return validate()">
             </fieldset>
         </form>
     </div>
-    <!-- <script>
-        function validate() {
-            const password = document.getElementById("password");
-            const password2 = document.getElementById("password2");
-
-            if (password.value !== password2.value) {
-                alert("Passwords do not match");
-                return false;
-            }
-            return true;
-        }
-    </script> 
-    onclick="return validate()"-->
 
 </body>
 </html>
