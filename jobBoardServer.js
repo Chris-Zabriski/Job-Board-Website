@@ -40,7 +40,7 @@ app.listen(portNumber);
 app.use(bodyParser.urlencoded({extended:false}));
 
 //Mongo Setup
-const uri = `mongodb+srv://${username}:${password}@cluster0.8bxycvi.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // Render the index page
@@ -91,10 +91,8 @@ app.get('/register', (request, response) => {
 
 // Render the register page
 app.post('/register', async (request, response) => {
-  const username = request.body.name;
-  const password = request.body.passowrd;
-
-  console.log(username + " " + password);
+  const username = request.body.username;
+  const password = request.body.password;
 
   try {
     await client.connect();
