@@ -7,6 +7,7 @@ const app = express();
 const portNumber = process.argv[2];
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require("dotenv").config({ path: path.resolve(__dirname, '.env') });
+const cookieParser = require("cookie-parser");
 
 // Usage Check
 if (process.argv.length != 3) {
@@ -29,6 +30,9 @@ app.set('view engine', 'ejs');
 const publicDir = require('path').join(__dirname,'/public');
 app.use(express.static(publicDir));
 
+// Enabling the cookie parser in Express modules
+app.use(cookieParser());
+
 // Server is now listening on given port number
 app.listen(portNumber);
 
@@ -36,7 +40,7 @@ app.listen(portNumber);
 app.use(bodyParser.urlencoded({extended:false}));
 
 //Mongo Setup
-const uri = `mongodb+srv://${username}:${password}@cluster0.8bxycvi.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // Render the index page
@@ -107,9 +111,31 @@ app.post('/register', async (request, response) => {
 });
 
 // Render board page
-app.get('/board', (request, response) => {
-  const action = {port: `http://localhost:${portNumber}/admin`};
-  response.render('board', action);
+app.get('/board', async (request, response) => {
+  let table = '<table border=\"1\" id=\"job-table\"><tr><th>Position</th><th>Salary Range</th><th>Location</th><th>Description</th><th>Requirements</th></tr>';
+  let allJobs;
+  try {
+    await client.connect();
+    allJobs = await client.db(database).collection(boardCollection).find({}).toArray();
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await client.close();
+  }
+  if (allJobs && allJobs.length !== 0) {
+    allJobs.forEach(element => {
+      table += `<tr><td>${element.position}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
+    });
+    table += '</table>';
+  
+    const jobTable = {table: table};
+  
+    response.render('board', jobTable);
+  } else {
+    const noJobs = {table: '<div id="no-jobs\">There are no Jobs to Display</div>'};
+
+    response.render('board', noJobs);
+  }
 });
 
 // Remove all applicants from the MongoDB database
@@ -163,7 +189,35 @@ app.post('/processAddJobs', async (request, response) => {
   await addJobs(variables);
 
   response.render('processAddJobs', variables);
-})
+});
+
+// Render the list of applicants page
+app.get('/viewApplicants', async (request, response) => {
+  let table = '<table border=\"1\" id=\"app-table\"><tr><th>Name</th><th>Job</th><th>Address</th></tr>';
+  let allApplicants;
+  try {
+    await client.connect();
+    allApplicants = await client.db(database).collection(appCollection).find({}).toArray();
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await client.close();
+  }
+  if (allApplicants && allApplicants.length !== 0) {
+    allApplicants.forEach(element => {
+      table += `<tr><td>${element.name}</td><td>${element.job}</td><td>${element.address}</td></tr>`
+    });
+    table += '</table>';
+  
+    const jobTable = {table: table};
+  
+    response.render('viewApplicants', jobTable);
+  } else {
+    const noApps = {table: '<div id="no-apps\">No Applicants</div>'};
+
+    response.render('viewApplicants', noApps);
+  }
+});
 
 // Function for add jobs to MongoDB database
 async function addJobs(values) {
@@ -171,7 +225,7 @@ async function addJobs(values) {
   try {
       await client.connect();
 
-      await updateValues(client, values);
+      await updateValues(values);
   } catch (e) {
       console.error(e);
   } finally {
@@ -180,10 +234,10 @@ async function addJobs(values) {
 }
 
 // Helper function for addJobs()
-async function updateValues(client, values) {
+async function updateValues(values) {
 
   const result = await client.db(database)
-  .collection(collection)
+  .collection(boardCollection)
   .insertOne(values);
 
 }
