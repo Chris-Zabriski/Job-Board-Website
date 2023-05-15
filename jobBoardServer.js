@@ -40,7 +40,7 @@ app.listen(portNumber);
 app.use(bodyParser.urlencoded({extended:false}));
 
 //Mongo Setup
-const uri = `mongodb+srv://${username}:${password}@cluster0.8bxycvi.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // Render the index page
@@ -58,10 +58,6 @@ app.get('/login', (request, response) => {
     const action = {port: `http://localhost:${portNumber}/login`};
     response.render('login', action);
 });
-
-//have a user page to look at their applications and a link to job board
-//job board should have a filter to look through database and display listings
-//admin page should have a form to add jobs (think of neccessary info) 
 
 // Render the admin page
 app.post('/login', async (request, response) => {
@@ -82,6 +78,10 @@ app.post('/login', async (request, response) => {
         response.render("invalid");
       }
     }
+});
+
+app.get('/admin', (request, response) => {
+  response.render('admin');
 });
 
 app.get('/register', (request, response) => {
