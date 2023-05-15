@@ -68,7 +68,7 @@ app.post('/login', async (request, response) => {
       const result = await client.db(database).collection(usersCollection).findOne({username: username});
 
       if (result !== null && result.password === password) {
-        const vars = {table: await getJobApps()};
+        const vars = {table: await getJobApps(username)};
         response.render('user', vars);
       } else {
         response.render("invalid");
@@ -81,7 +81,7 @@ app.get('/admin', (request, response) => {
 });
 
 app.get('/register', (request, response) => {
-  const action = {port: `http://localhost:${portNumber}/register`};
+  const action = {port: `http://localhost:${portNumber}/register`, message: ""};
   response.render('register', action)
 });
 
@@ -97,16 +97,14 @@ app.post('/register', async (request, response) => {
                         .findOne({username: username});
 
     if (check) {
-      alert("username is already taken :(");
-
-      const action = {port: `http://localhost:${portNumber}/login`};
-      response.render('login', action);
+      const action = {port: `http://localhost:${portNumber}/register`, message: "Username is taken"};
+      response.render('register', action);
     } else {
       let tempUser = {username: username, password: password};
       const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
 
-      const vars = {table: await getTable()};
-      response.render('board', vars);
+      const vars = {table: await getJobApps(username)};
+        response.render('user', vars);
     } 
   }
   catch (e) {
@@ -158,13 +156,14 @@ app.get('/removeJobs', (request, response) => {
 });
 
 app.post('/removeJobs', async (request, response) => {
-  const title = request.body.title;
-  const salary = request.body.salary;
+  const position = request.body.position;
+  const company = request.body.company;
 
   try {
     await client.connect();
-    let targetJob = {title: title, salary: salary};
-    const result = await client.db(database).collection(boardCollection).deleteOne(targetJob);
+    let targetJob = {position: position, company: company};
+    await client.db(database).collection(boardCollection).deleteOne(targetJob);
+    await client.db(database).collection(appCollection).deleteMany(targetJob);
 
     const vars = {table: await getTable()};
     response.render('board', vars);
@@ -200,7 +199,6 @@ app.get('/confirmJobsRemoved', async (request, response) => {
 
   response.render('processJobsRemove', removed);
 });
-
 
 // Render the page to add jobs to the board.
 app.get('/addJobs', (request, response) => {
@@ -270,21 +268,12 @@ async function addApplication(values) {
 async function addJobs(values) {
   try {
       await client.connect();
-
-      await updateValues(values);
+      await client.db(database).collection(boardCollection).insertOne(values);
   } catch (e) {
       console.error(e);
   } finally {
       await client.close();
   }
-}
-
-// Helper function for addJobs()
-async function updateValues(values) {
-
-  const result = await client.db(database)
-  .collection(boardCollection)
-  .insertOne(values);
 }
 
 async function getTable() {
@@ -314,33 +303,32 @@ async function getJobApps(username) {
   let myJobs;
   try {
     await client.connect();
-    myJobs = await client.db(database).collection(appCollection).find({username: username}).toArray();
+    let filter = {username: {$eq: username}};
+    myJobs = await client.db(database).collection(appCollection).find(filter).toArray();
+
+    if (myJobs && myJobs.length !== 0) {
+      for (const element of myJobs) {
+        let job = await client.db(database).collection(boardCollection).findOne({position: element.position, company: element.company});
+        table += `<tr><td>${job.position}</td><td>${job.company}</td><td>\$${job.startSalary}-\$${job.endSalary}</td><td>${job.location}</td><td>${job.description}</td><td>${job.requirements}</td></tr>`
+      };
+      table += '</table><br>';
+    } else {
+      table = '<div id="no-jobs\">You have not applied to any jobs, or your applications have been rejected</div>';
+    }
+    table += '<a href=\"board\"><button type=\"button\" class=\"admin-btns\">Get yourself out there and apply!</button></a>';
+    return table
   } catch (e) {
     console.error(e)
   } finally {
     await client.close();
   }
-  if (myJobs && myJobs.length !== 0) {
-    myJobs.forEach(element => {
-      table += `<tr><td>${element.position}</td><td>${element.company}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td></tr>`
-    });
-    table += '</table>';
-  } else {
-    table = '<div id="no-jobs\">You have not applied to any jobs, or your applications have been rejected</div>';
-    table += '<a href=\"board\"><button type=\"button\" class=\"admin-btns\">Get yourself out there and apply!</button></a>'
-  }
-  return table
 }
 
 // Function for removing all applications from the MongoDB database
 async function removeApplicants() {
-  const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-  let result;
-
   try {
       await client.connect();
-      result = await client.db(database).collection(appCollection).deleteMany({});
+      await client.db(database).collection(appCollection).deleteMany({});
   } catch (e) {
       console.error(e);
   } finally {
@@ -351,13 +339,10 @@ async function removeApplicants() {
 
 // Function for removing all applications from the MongoDB database
 async function removeJobs() {
-  const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-  let result;
-
   try {
       await client.connect();
-      result = await client.db(database).collection(boardCollection).deleteMany({});
+      await client.db(database).collection(boardCollection).deleteMany({});
+      await client.db(database).collection(appCollection).deleteMany({});
   } catch (e) {
       console.error(e);
   } finally {
