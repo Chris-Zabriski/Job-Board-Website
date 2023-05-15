@@ -40,7 +40,7 @@ app.listen(portNumber);
 app.use(bodyParser.urlencoded({extended:false}));
 
 //Mongo Setup
-const uri = `mongodb+srv://${username}:${password}@cluster0.9115dex.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${username}:${password}@cluster0.8bxycvi.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // Render the index page
@@ -55,7 +55,7 @@ app.get('/about', (request, response) => {
 
 // Render the login page
 app.get('/login', (request, response) => {
-    const action = {port: `http://localhost:${portNumber}/user`};
+    const action = {port: `http://localhost:${portNumber}/login`};
     response.render('login', action);
 });
 
@@ -65,15 +65,12 @@ app.get('/login', (request, response) => {
 //admin page should have a form to add jobs (think of neccessary info) 
 
 // Render the admin page
-app.post('/user', async (request, response) => {
+app.post('/login', async (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
 
     if (username === 'admin' && password === '1234') {
       response.render('admin');
-    } else if (username === '' && password === '') {
-      const action = {port: `http://localhost:${portNumber}/register`};
-      response.render('register', action)
     } else {
       //Check if the login provided was valid, if so display their user page
       await client.connect();
@@ -87,18 +84,26 @@ app.post('/user', async (request, response) => {
     }
 });
 
+app.get('/register', (request, response) => {
+  const action = {port: `http://localhost:${portNumber}/register`};
+  response.render('register', action)
+});
+
 // Render the register page
 app.post('/register', async (request, response) => {
   const username = request.body.name;
   const password = request.body.passowrd;
 
+  console.log(username + " " + password);
+
   try {
     await client.connect();
     //TODO: have to check if username has been taken before we register
     //as of now values being passed are null
-    console.log(username + " " + password);
-    let tempUser = {username: username, password: password};
+    if (username !== undefined && password !== undefined) {
+      let tempUser = {username: username, password: password};
     const result = await client.db(database).collection(usersCollection).insertOne(tempUser);
+    }
 
     //initially users variables will be empty but we might still need to pass something
     response.render("user");
