@@ -51,7 +51,7 @@ app.get('/about', (request, response) => {
 
 // Render the login page
 app.get('/login', (request, response) => {
-    const action = {port: `http://localhost:${portNumber}/login`};
+    const action = {port: `https://tricky-button-seal.cyclic.app/login`};
     response.render('login', action);
 });
 
@@ -81,7 +81,7 @@ app.get('/admin', (request, response) => {
 });
 
 app.get('/register', (request, response) => {
-  const action = {port: `http://localhost:${portNumber}/register`, message: ""};
+  const action = {port: `https://tricky-button-seal.cyclic.app/register`, message: ""};
   response.render('register', action)
 });
 
@@ -97,7 +97,7 @@ app.post('/register', async (request, response) => {
                         .findOne({username: username});
 
     if (check) {
-      const action = {port: `http://localhost:${portNumber}/register`, message: "Username is taken"};
+      const action = {port: `https://tricky-button-seal.cyclic.app/register`, message: "Username is taken"};
       response.render('register', action);
     } else {
       let tempUser = {username: username, password: password};
@@ -123,7 +123,7 @@ app.get('/board', async (request, response) => {
 // Render the application page
 app.get('/apply', (request, response) => {
   const variables = {
-    port: `http://localhost:${portNumber}/applied`,
+    port: `https://tricky-button-seal.cyclic.app/applied`,
     position: request.query.position,
     company: request.query.company,
   };
@@ -151,7 +151,7 @@ app.post('/applied', async (request, response) => {
 
 // Render the remove jobs page
 app.get('/removeJobs', (request, response) => {
-  const action = {port: `http://localhost:${portNumber}/removeJobs`};
+  const action = {port: `https://tricky-button-seal.cyclic.app/removeJobs`};
   response.render("removeJobs", action);
 });
 
@@ -202,7 +202,7 @@ app.get('/confirmJobsRemoved', async (request, response) => {
 
 // Render the page to add jobs to the board.
 app.get('/addJobs', (request, response) => {
-  const action = {port: `http://localhost:${portNumber}/processAddJobs`};
+  const action = {port: `https://tricky-button-seal.cyclic.app/processAddJobs`};
   response.render('addJobs', action);
 });
 
@@ -355,20 +355,20 @@ async function removeJobs() {
   }
 }
 
-/*Server Command Line Interpreter*/
-process.stdin.setEncoding("utf8");
-console.log(`Web server started and running at http://localhost:${portNumber}`);
-const prompt = "Stop to shutdown the server: ";
-process.stdout.write(prompt);
-process.stdin.on("readable", function () {
-  let dataInput = process.stdin.read();
-  if (dataInput !== null) {
-    let command = dataInput.trim();
-    if (command === "stop") {
-        console.log("Shutting down the server");
-        process.exit(0);
-    }
-    process.stdout.write(prompt);
-    process.stdin.resume();
-  }
-});
+/*Server Command Line Interpreter (Depricated) */
+// process.stdin.setEncoding("utf8");
+// console.log(`Web server started and running athttps://tricky-button-seal.cyclic.app/`);
+// const prompt = "Stop to shutdown the server: ";
+// process.stdout.write(prompt);
+// process.stdin.on("readable", function () {
+//   let dataInput = process.stdin.read();
+//   if (dataInput !== null) {
+//     let command = dataInput.trim();
+//     if (command === "stop") {
+//         console.log("Shutting down the server");
+//         process.exit(0);
+//     }
+//     process.stdout.write(prompt);
+//     process.stdin.resume();
+//   }
+// });
