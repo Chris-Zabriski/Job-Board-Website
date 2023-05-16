@@ -8,11 +8,11 @@ const portNumber = process.argv[2];
 const { MongoClient, ServerApiVersion } = require('mongodb');
 require("dotenv").config({ path: path.resolve(__dirname, '.env') });
 
-// Usage Check
-if (process.argv.length != 3) {
-  process.stdout.write(`Usage ${process.argv[1]} PORT_NUMBER_HERE\n`);
-  process.exit(1);
-}
+// Usage Check (Depricated)
+// if (process.argv.length != 3) {
+//   process.stdout.write(`Usage ${process.argv[1]} PORT_NUMBER_HERE\n`);
+//   process.exit(1);
+// }
 
 // MongoDB credentials
 const username = process.env.MONGO_DB_USERNAME;
