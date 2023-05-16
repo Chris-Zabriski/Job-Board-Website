@@ -289,7 +289,9 @@ async function getTable() {
   }
   if (allJobs && allJobs.length !== 0) {
     allJobs.forEach(element => {
-      table += `<tr><td>${element.position}</td><td>${element.company}</td><td>\$${element.startSalary}-\$${element.endSalary}</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td><td><a href=\"/apply/?position=${element.position.replace(' ', '-')}&company=${element.company.replace(' ', '-')}\">Apply</a></tr>`
+      table += `<tr><td>${element.position}</td><td>${element.company}</td><td>\$${element.startSalary}-\$${element.endSalary}`
+      table += `</td><td>${element.location}</td><td>${element.description}</td><td>${element.requirements}</td>`
+      table += `<td><a href=\"/apply/?position=${element.position.replace(' ', '-')}&company=${element.company.replace(' ', '-')}\"><button type=\"button\" class=\"admin-btns\">Apply</button></a></tr>`
     });
     table += '</table>';
   } else {
@@ -326,9 +328,10 @@ async function getJobApps(username) {
 
 // Function for removing all applications from the MongoDB database
 async function removeApplicants() {
+  let result;
   try {
       await client.connect();
-      await client.db(database).collection(appCollection).deleteMany({});
+      result = await client.db(database).collection(appCollection).deleteMany({});
   } catch (e) {
       console.error(e);
   } finally {
@@ -339,9 +342,10 @@ async function removeApplicants() {
 
 // Function for removing all applications from the MongoDB database
 async function removeJobs() {
+  let result;
   try {
       await client.connect();
-      await client.db(database).collection(boardCollection).deleteMany({});
+      result = await client.db(database).collection(boardCollection).deleteMany({});
       await client.db(database).collection(appCollection).deleteMany({});
   } catch (e) {
       console.error(e);
