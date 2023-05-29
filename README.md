@@ -1,4 +1,4 @@
-# cmsc335JobBoard
+# JobBoard
 
 A Job Board created using Node.
 
@@ -7,8 +7,8 @@ Username: admin\
 password: 1234
 
 Team Members:\
-Griffin Anderson (117069563) (ganders2)\
-Christopher Zabriski (116563864) (czabrisk)
+Griffin Anderson \
+Christopher Zabriski
 
 App Description:\
 A webpage built using Node JS that simulates a Job Board. There are a few landing pages and a job board that anybody can see. Anybody can apply to a job by filling\
@@ -22,4 +22,4 @@ Youtube Demo: https://youtu.be/gazMwFwHM5M
 
 Website Link: https://tricky-button-seal.cyclic.app
 
-GitHub Link: https://github.com/griffin084/cmsc335JobBoard
+GitHub Link: [https://github.com/Chris-Zabriski/Job-Board-Website]
